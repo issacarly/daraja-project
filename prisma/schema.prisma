@@ -1,0 +1,227 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// =====================
+// USERS
+// =====================
+
+model User {
+  id        String   @id @default(cuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(STUDENT)
+  avatar    String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  student   Student?
+  guardian  Guardian?
+  teacher   Teacher?
+}
+
+enum Role {
+  STUDENT
+  GUARDIAN
+  TEACHER
+  ADMIN
+}
+
+// =====================
+// STUDENT PROFILE
+// =====================
+
+model Student {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  grade     Grade
+  school    String?
+  guardianId String?
+  guardian  Guardian? @relation(fields: [guardianId], references: [id])
+
+  enrollments  Enrollment[]
+  quizAttempts QuizAttempt[]
+  progress     Progress[]
+}
+
+enum Grade {
+  GRADE_1
+  GRADE_2
+  GRADE_3
+  GRADE_4
+  GRADE_5
+  GRADE_6
+  GRADE_7
+  GRADE_8
+  GRADE_9
+}
+
+// =====================
+// GUARDIAN PROFILE
+// =====================
+
+model Guardian {
+  id        String    @id @default(cuid())
+  userId    String    @unique
+  user      User      @relation(fields: [userId], references: [id])
+  phone     String?
+  students  Student[]
+}
+
+// =====================
+// TEACHER PROFILE
+// =====================
+
+model Teacher {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id])
+  school    String?
+  subjects  String?
+
+  courses   Course[]
+}
+
+// =====================
+// SUBJECTS & COURSES
+// =====================
+
+model Subject {
+  id      String   @id @default(cuid())
+  name    String
+  grade   Grade
+  icon    String?
+  color   String?
+
+  courses Course[]
+}
+
+model Course {
+  id          String   @id @default(cuid())
+  title       String
+  description String?  @db.Text
+  subjectId   String
+  subject     Subject  @relation(fields: [subjectId], references: [id])
+  teacherId   String?
+  teacher     Teacher? @relation(fields: [teacherId], references: [id])
+  grade       Grade
+  term        Term
+  createdAt   DateTime @default(now())
+
+  lessons     Lesson[]
+  enrollments Enrollment[]
+  quizzes     Quiz[]
+}
+
+enum Term {
+  TERM_1
+  TERM_2
+  TERM_3
+}
+
+// =====================
+// LESSONS
+// =====================
+
+model Lesson {
+  id          String   @id @default(cuid())
+  title       String
+  content     String?  @db.Text
+  videoUrl    String?
+  fileUrl     String?
+  orderIndex  Int      @default(0)
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id])
+
+  progress    Progress[]
+}
+
+// =====================
+// ENROLLMENTS
+// =====================
+
+model Enrollment {
+  id        String   @id @default(cuid())
+  studentId String
+  student   Student  @relation(fields: [studentId], references: [id])
+  courseId  String
+  course    Course   @relation(fields: [courseId], references: [id])
+  enrolledAt DateTime @default(now())
+
+  @@unique([studentId, courseId])
+}
+
+// =====================
+// PROGRESS
+// =====================
+
+model Progress {
+  id          String   @id @default(cuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id])
+  lessonId    String
+  lesson      Lesson   @relation(fields: [lessonId], references: [id])
+  completed   Boolean  @default(false)
+  completedAt DateTime?
+
+  @@unique([studentId, lessonId])
+}
+
+// =====================
+// QUIZZES
+// =====================
+
+model Quiz {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  courseId    String
+  course      Course   @relation(fields: [courseId], references: [id])
+  timeLimit   Int?     // in minutes
+  createdAt   DateTime @default(now())
+
+  questions   Question[]
+  attempts    QuizAttempt[]
+}
+
+model Question {
+  id           String   @id @default(cuid())
+  quizId       String
+  quiz         Quiz     @relation(fields: [quizId], references: [id])
+  questionText String   @db.Text
+  imageUrl     String?
+  orderIndex   Int      @default(0)
+
+  choices      Choice[]
+}
+
+model Choice {
+  id          String   @id @default(cuid())
+  questionId  String
+  question    Question @relation(fields: [questionId], references: [id])
+  choiceText  String
+  isCorrect   Boolean  @default(false)
+}
+
+// =====================
+// QUIZ ATTEMPTS
+// =====================
+
+model QuizAttempt {
+  id          String   @id @default(cuid())
+  studentId   String
+  student     Student  @relation(fields: [studentId], references: [id])
+  quizId      String
+  quiz        Quiz     @relation(fields: [quizId], references: [id])
+  score       Int?
+  totalMarks  Int?
+  attemptedAt DateTime @default(now())
+}
