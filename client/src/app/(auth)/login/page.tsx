@@ -1,8 +1,52 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Mail, Lock, LogIn } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Login() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const res = await fetch("http://localhost:8000/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+      
+      if (!res.ok) {
+        setError(data.detail || data.message || "Login failed");
+      } else {
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        router.push("/dashboard");
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-slate-50 flex font-sans selection:bg-sky-200 selection:text-sky-900">
       
@@ -33,7 +77,7 @@ export default function Login() {
             </p>
           </div>
 
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             
             <div className="space-y-2">
               <label className="text-[14px] font-bold text-slate-700 ml-1">Email Address</label>
@@ -43,8 +87,12 @@ export default function Login() {
                 </div>
                 <input 
                   type="email" 
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   placeholder="name@example.com"
                   className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-2xl text-[15px] font-medium text-slate-800 focus:outline-none focus:border-sky-500 focus:bg-white transition-colors placeholder:text-slate-400"
+                  required
                 />
               </div>
             </div>
@@ -57,8 +105,12 @@ export default function Login() {
                 </div>
                 <input 
                   type="password" 
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
                   placeholder="••••••••"
                   className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-2xl text-[15px] font-medium text-slate-800 focus:outline-none focus:border-sky-500 focus:bg-white transition-colors placeholder:text-slate-400"
+                  required
                 />
               </div>
             </div>
@@ -73,8 +125,14 @@ export default function Login() {
               </Link>
             </div>
 
-            <button type="button" className="w-full flex items-center justify-center gap-2 bg-slate-800 text-white rounded-full py-4 text-[16px] font-bold shadow-xl shadow-slate-800/20 hover:bg-slate-700 hover:scale-[1.02] transition-all mt-4">
-              <LogIn size={18} strokeWidth={2.5} /> Sign In
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-sm font-medium rounded-xl">
+                {error}
+              </div>
+            )}
+
+            <button disabled={loading} type="submit" className="w-full flex items-center justify-center gap-2 bg-slate-800 text-white rounded-full py-4 text-[16px] font-bold shadow-xl shadow-slate-800/20 hover:bg-slate-700 hover:scale-[1.02] transition-all mt-4 disabled:opacity-70 disabled:hover:scale-100">
+              <LogIn size={18} strokeWidth={2.5} /> {loading ? "Signing In..." : "Sign In"}
             </button>
             
           </form>

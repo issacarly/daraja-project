@@ -130,6 +130,7 @@ export default function Home() {
               src="/landing-photo.jpg" 
               alt="Kenyan Students"
               fill
+              sizes="(max-width: 768px) 100vw, 50vw"
               className="object-contain object-center xl:object-right drop-shadow-2xl"
               priority
             />

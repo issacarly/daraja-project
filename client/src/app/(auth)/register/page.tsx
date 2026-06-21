@@ -1,8 +1,68 @@
+"use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Mail, Lock, User, Sparkles, UserCircle2 } from "lucide-react";
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Register() {
+  const router = useRouter();
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    password_confirm: "",
+    role: "STUDENT",
+    grade: "Grade 5"
+  });
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleRoleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, role: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+
+    try {
+      const res = await fetch("http://localhost:8000/api/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const data = await res.json();
+      
+      if (!res.ok) {
+        // Handle FastAPI validation errors (which are arrays) or detail messages
+        if (data.detail && Array.isArray(data.detail)) {
+          setError(data.detail[0].msg);
+        } else if (data.detail) {
+          setError(data.detail);
+        } else {
+          setError(data.message || "Registration failed");
+        }
+      } else {
+        // Store token and redirect
+        localStorage.setItem("token", data.token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        router.push("/dashboard"); // Assuming there's a dashboard or similar
+      }
+    } catch (err) {
+      setError("An error occurred. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <main className="min-h-screen bg-slate-50 flex font-sans selection:bg-amber-200 selection:text-amber-900">
       
@@ -67,29 +127,59 @@ export default function Register() {
             </p>
           </div>
 
-          <form className="space-y-5">
+          <form className="space-y-5" onSubmit={handleSubmit}>
             
             {/* Account Type Selector */}
             <div className="grid grid-cols-3 gap-3 mb-6">
               <label className="cursor-pointer">
-                <input type="radio" name="account_type" className="peer sr-only" defaultChecked />
+                <input type="radio" name="role" value="STUDENT" checked={formData.role === "STUDENT"} onChange={handleRoleChange} className="peer sr-only" />
                 <div className="text-center py-3 rounded-2xl border-2 border-slate-200 peer-checked:border-sky-500 peer-checked:bg-sky-50 peer-checked:text-sky-700 text-slate-500 font-bold text-[13px] transition-all hover:border-slate-300">
                   Student
                 </div>
               </label>
               <label className="cursor-pointer">
-                <input type="radio" name="account_type" className="peer sr-only" />
+                <input type="radio" name="role" value="GUARDIAN" checked={formData.role === "GUARDIAN"} onChange={handleRoleChange} className="peer sr-only" />
                 <div className="text-center py-3 rounded-2xl border-2 border-slate-200 peer-checked:border-sky-500 peer-checked:bg-sky-50 peer-checked:text-sky-700 text-slate-500 font-bold text-[13px] transition-all hover:border-slate-300">
                   Guardian
                 </div>
               </label>
               <label className="cursor-pointer">
-                <input type="radio" name="account_type" className="peer sr-only" />
+                <input type="radio" name="role" value="TEACHER" checked={formData.role === "TEACHER"} onChange={handleRoleChange} className="peer sr-only" />
                 <div className="text-center py-3 rounded-2xl border-2 border-slate-200 peer-checked:border-sky-500 peer-checked:bg-sky-50 peer-checked:text-sky-700 text-slate-500 font-bold text-[13px] transition-all hover:border-slate-300">
                   Teacher
                 </div>
               </label>
             </div>
+
+            {/* Grade Selector (only for STUDENT) */}
+            {formData.role === "STUDENT" && (
+              <div className="space-y-2">
+                <label className="text-[14px] font-bold text-slate-700 ml-1">Grade Level</label>
+                <div className="relative">
+                  <select
+                    name="grade"
+                    value={formData.grade}
+                    onChange={(e: any) => handleChange(e)}
+                    className="w-full px-4 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-2xl text-[15px] font-medium text-slate-800 focus:outline-none focus:border-sky-500 focus:bg-white transition-colors appearance-none"
+                  >
+                    <option value="Grade 1">Grade 1</option>
+                    <option value="Grade 2">Grade 2</option>
+                    <option value="Grade 3">Grade 3</option>
+                    <option value="Grade 4">Grade 4</option>
+                    <option value="Grade 5">Grade 5</option>
+                    <option value="Grade 6">Grade 6</option>
+                    <option value="Grade 7">Grade 7</option>
+                    <option value="Grade 8">Grade 8</option>
+                    <option value="Grade 9">Grade 9</option>
+                  </select>
+                  <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-400">
+                    <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div className="space-y-2">
               <label className="text-[14px] font-bold text-slate-700 ml-1">Full Name</label>
@@ -99,8 +189,12 @@ export default function Register() {
                 </div>
                 <input 
                   type="text" 
+                  name="name"
+                  value={formData.name}
+                  onChange={handleChange}
                   placeholder="John Doe"
                   className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-2xl text-[15px] font-medium text-slate-800 focus:outline-none focus:border-sky-500 focus:bg-white transition-colors placeholder:text-slate-400"
+                  required
                 />
               </div>
             </div>
@@ -113,8 +207,12 @@ export default function Register() {
                 </div>
                 <input 
                   type="email" 
+                  name="email"
+                  value={formData.email}
+                  onChange={handleChange}
                   placeholder="name@example.com"
                   className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-2xl text-[15px] font-medium text-slate-800 focus:outline-none focus:border-sky-500 focus:bg-white transition-colors placeholder:text-slate-400"
+                  required
                 />
               </div>
             </div>
@@ -127,14 +225,43 @@ export default function Register() {
                 </div>
                 <input 
                   type="password" 
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
                   placeholder="Create a strong password"
                   className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-2xl text-[15px] font-medium text-slate-800 focus:outline-none focus:border-sky-500 focus:bg-white transition-colors placeholder:text-slate-400"
+                  required
+                />
+              </div>
+              <p className="text-xs text-slate-500 ml-1">Must contain letters, numbers, and special characters.</p>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[14px] font-bold text-slate-700 ml-1">Confirm Password</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                  <Lock size={18} strokeWidth={2.5} />
+                </div>
+                <input 
+                  type="password" 
+                  name="password_confirm"
+                  value={formData.password_confirm}
+                  onChange={handleChange}
+                  placeholder="Confirm your password"
+                  className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-2xl text-[15px] font-medium text-slate-800 focus:outline-none focus:border-sky-500 focus:bg-white transition-colors placeholder:text-slate-400"
+                  required
                 />
               </div>
             </div>
 
-            <button type="button" className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-sky-500 to-sky-600 text-white rounded-full py-4 text-[16px] font-bold shadow-xl shadow-sky-500/30 hover:shadow-sky-500/50 hover:scale-[1.02] transition-all mt-6">
-              <UserCircle2 size={18} strokeWidth={2.5} /> Create Account
+            {error && (
+              <div className="p-3 bg-red-50 border border-red-200 text-red-600 text-sm font-medium rounded-xl">
+                {error}
+              </div>
+            )}
+
+            <button disabled={loading} type="submit" className="w-full flex items-center justify-center gap-2 bg-gradient-to-r from-sky-500 to-sky-600 text-white rounded-full py-4 text-[16px] font-bold shadow-xl shadow-sky-500/30 hover:shadow-sky-500/50 hover:scale-[1.02] transition-all mt-6 disabled:opacity-70 disabled:hover:scale-100">
+              <UserCircle2 size={18} strokeWidth={2.5} /> {loading ? "Creating..." : "Create Account"}
             </button>
             
           </form>
