@@ -1,10 +1,28 @@
 generator client {
   provider = "prisma-client-js"
+  output   = "../client/node_modules/.prisma/client"
 }
 
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+// =====================
+// INSTITUTIONS
+// =====================
+
+model Institution {
+  id        Int      @id @default(autoincrement())
+  uic       String   @unique @db.VarChar(4)
+  name      String   @db.VarChar(255)
+  classes   Int      @default(1)
+  createdAt DateTime @default(now())
+
+  // Relations
+  users     User[]
+
+  @@map("institutions")
 }
 
 // =====================
@@ -14,7 +32,7 @@ datasource db {
 model User {
   id        String   @id @default(cuid())
   name      String
-  email     String   @unique
+  email     String
   password  String
   role      Role     @default(STUDENT)
   avatar    String?
@@ -25,6 +43,10 @@ model User {
   student   Student?
   guardian  Guardian?
   teacher   Teacher?
+  institutionId Int?
+  institution   Institution? @relation(fields: [institutionId], references: [id])
+
+  @@unique([email, role])
 }
 
 enum Role {

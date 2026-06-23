@@ -10,13 +10,18 @@ export default function Login() {
   const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
-    password: ""
+    password: "",
+    role: "STUDENT"
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleRoleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, role: e.target.value });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -34,7 +39,13 @@ export default function Login() {
       const data = await res.json();
       
       if (!res.ok) {
-        setError(data.detail || data.message || "Login failed");
+        if (data.detail && Array.isArray(data.detail)) {
+          setError(data.detail[0].msg);
+        } else if (data.detail) {
+          setError(data.detail);
+        } else {
+          setError(data.message || "Login failed");
+        }
       } else {
         localStorage.setItem("token", data.token);
         localStorage.setItem("user", JSON.stringify(data.user));
@@ -78,6 +89,28 @@ export default function Login() {
           </div>
 
           <form className="space-y-6" onSubmit={handleSubmit}>
+            
+            {/* Account Type Selector */}
+            <div className="grid grid-cols-3 gap-3">
+              <label className="cursor-pointer">
+                <input type="radio" name="role" value="STUDENT" checked={formData.role === "STUDENT"} onChange={handleRoleChange} className="peer sr-only" />
+                <div className="text-center py-3 rounded-2xl border-2 border-slate-200 peer-checked:border-sky-500 peer-checked:bg-sky-50 peer-checked:text-sky-700 text-slate-500 font-bold text-[13px] transition-all hover:border-slate-300">
+                  Student
+                </div>
+              </label>
+              <label className="cursor-pointer">
+                <input type="radio" name="role" value="GUARDIAN" checked={formData.role === "GUARDIAN"} onChange={handleRoleChange} className="peer sr-only" />
+                <div className="text-center py-3 rounded-2xl border-2 border-slate-200 peer-checked:border-sky-500 peer-checked:bg-sky-50 peer-checked:text-sky-700 text-slate-500 font-bold text-[13px] transition-all hover:border-slate-300">
+                  Guardian
+                </div>
+              </label>
+              <label className="cursor-pointer">
+                <input type="radio" name="role" value="TEACHER" checked={formData.role === "TEACHER"} onChange={handleRoleChange} className="peer sr-only" />
+                <div className="text-center py-3 rounded-2xl border-2 border-slate-200 peer-checked:border-sky-500 peer-checked:bg-sky-50 peer-checked:text-sky-700 text-slate-500 font-bold text-[13px] transition-all hover:border-slate-300">
+                  Teacher
+                </div>
+              </label>
+            </div>
             
             <div className="space-y-2">
               <label className="text-[14px] font-bold text-slate-700 ml-1">Email Address</label>
@@ -165,9 +198,7 @@ export default function Login() {
         {/* Glass Card Showcase */}
         <div className="glass w-[80%] max-w-[600px] rounded-[3rem] p-12 relative z-10 border-2 border-white/80 shadow-2xl shadow-sky-900/10 animate-float-delayed flex flex-col items-center text-center">
           
-          <div className="w-24 h-24 bg-white rounded-3xl shadow-lg border border-slate-100 flex items-center justify-center mb-8 rotate-3">
-             <Image src="/daraja-logo.png" alt="Daraja Icon" width={60} height={60} className="object-contain" />
-          </div>
+          <Image src="/landing-photo.jpg" alt="Student" width={240} height={240} className="object-contain mb-6 -mt-12" />
 
           <h2 className="text-[2.2rem] font-black text-slate-800 leading-[1.1] tracking-tight">
             The bridge to your <span className="text-gradient">academic success.</span>

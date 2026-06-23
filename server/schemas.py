@@ -4,6 +4,7 @@ from pydantic import BaseModel, EmailStr, validator
 class UserLogin(BaseModel):
     email: EmailStr
     password: str
+    role: str = "STUDENT"
 
 class UserCreate(BaseModel):
     name: str

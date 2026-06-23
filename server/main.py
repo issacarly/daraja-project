@@ -15,7 +15,7 @@ app = FastAPI(title="Daraja LMS API")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000", "http://192.168.0.104:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -51,9 +51,9 @@ def read_root():
 
 @app.post("/api/signup", response_model=dict, status_code=status.HTTP_201_CREATED)
 def signup(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    db_user = db.query(models.User).filter(models.User.email == user.email).first()
+    db_user = db.query(models.User).filter(models.User.email == user.email, models.User.role == user.role).first()
     if db_user:
-        raise HTTPException(status_code=409, detail="Email already registered.")
+        raise HTTPException(status_code=409, detail="An account with this email and role already exists.")
     
     hashed_password = get_password_hash(user.password)
     new_user = models.User(
@@ -72,11 +72,20 @@ def signup(user: schemas.UserCreate, db: Session = Depends(get_db)):
 
 @app.post("/api/login")
 def login(user_credentials: schemas.UserLogin, db: Session = Depends(get_db)):
-    user = db.query(models.User).filter(models.User.email == user_credentials.email).first()
+    print(f"Login attempt: email='{user_credentials.email}', role='{user_credentials.role}', pass='{user_credentials.password}'")
+    user = db.query(models.User).filter(models.User.email == user_credentials.email, models.User.role == user_credentials.role).first()
     if not user:
+        print(f"User not found for email='{user_credentials.email}' and role='{user_credentials.role}'")
+        raise HTTPException(status_code=401, detail="Invalid email, password, or role.")
+    
+    is_password_correct = verify_password(user_credentials.password, user.password)
+    if not is_password_correct:
+        print("Password mismatch")
         raise HTTPException(status_code=401, detail="Invalid email or password.")
-    if not verify_password(user_credentials.password, user.password):
-        raise HTTPException(status_code=401, detail="Invalid email or password.")
+    
+    print("Login successful")
     
     access_token = create_access_token(data={"sub": str(user.id), "role": user.role})
     return {"token": access_token, "user": {"id": user.id, "name": user.name, "email": user.email, "role": user.role, "grade": user.grade}}
+
+# Trigger reload

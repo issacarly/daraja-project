@@ -1,0 +1,35 @@
+// ─────────────────────────────────────────────────────────────────────────────
+// ADD THIS MODEL to your existing schema.prisma
+// Place it alongside your existing User, Student, Teacher models
+// ─────────────────────────────────────────────────────────────────────────────
+
+model Institution {
+  id        Int      @id @default(autoincrement())
+  uic       String   @unique @db.VarChar(4)
+  name      String   @db.VarChar(255)
+  classes   Int      @default(1)
+  createdAt DateTime @default(now())
+
+  // Relations — every user registered with this UIC belongs here
+  users     User[]
+
+  @@map("institutions")
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// ADD THESE FIELDS to your existing User model:
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Inside model User { ... } add:
+//
+//   institutionId  Int?
+//   institution    Institution? @relation(fields: [institutionId], references: [id])
+//
+// ─────────────────────────────────────────────────────────────────────────────
+// MIGRATION COMMANDS (run in order):
+//
+//   npx prisma migrate dev --name add_institution_uic
+//   npx prisma generate
+//   npx tsx prisma/seed.ts          ← seeds all 5033 institutions
+//
+// ─────────────────────────────────────────────────────────────────────────────

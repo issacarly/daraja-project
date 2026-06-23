@@ -4,6 +4,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ArrowLeft, Mail, Lock, User, Sparkles, UserCircle2 } from "lucide-react";
 import { useState } from "react";
+import UICInput from "@/components/auth/UICInput";
 import { useRouter } from "next/navigation";
 
 export default function Register() {
@@ -14,7 +15,8 @@ export default function Register() {
     password: "",
     password_confirm: "",
     role: "STUDENT",
-    grade: "Grade 5"
+    grade: "Grade 5",
+    institutionId: null as number | null
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -79,9 +81,7 @@ export default function Register() {
         {/* Glass Card Showcase */}
         <div className="glass w-[80%] max-w-[600px] rounded-[3rem] p-12 relative z-10 border-2 border-white/80 shadow-2xl shadow-amber-900/10 animate-float flex flex-col items-center text-center">
           
-          <div className="w-24 h-24 bg-white rounded-3xl shadow-lg border border-slate-100 flex items-center justify-center mb-8 -rotate-3 text-amber-500">
-            <Sparkles size={48} strokeWidth={2} />
-          </div>
+          <Image src="/landing-photo.jpg" alt="Student" width={240} height={240} className="object-contain mb-6 -mt-12" />
 
           <h2 className="text-[2.2rem] font-black text-slate-800 leading-[1.1] tracking-tight">
             Start your learning <span className="text-gradient">journey today.</span>
@@ -180,6 +180,11 @@ export default function Register() {
                 </div>
               </div>
             )}
+
+            <div className="space-y-2 z-50">
+              <label className="text-[14px] font-bold text-slate-700 ml-1">School / Institution</label>
+              <UICInput onSelect={(inst) => setFormData(f => ({ ...f, institutionId: inst?.id ?? null }))} />
+            </div>
 
             <div className="space-y-2">
               <label className="text-[14px] font-bold text-slate-700 ml-1">Full Name</label>
