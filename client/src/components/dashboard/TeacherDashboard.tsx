@@ -2,9 +2,12 @@
 import { useState, useEffect } from "react";
 import {
   Users, BookOpen, TrendingUp, AlertCircle, CheckCircle2,
-  ChevronRight, BarChart3, Award, Filter, Search, Clock, Loader2
+  ChevronRight, BarChart3, Award, Filter, Search, Clock, Loader2,
+  ArrowLeft, Home
 } from "lucide-react";
 import { getTeacherDashboardData, getStudentsForClass } from "@/app/actions/teacher";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 const COMPETENCY_LEVELS = [
   { label: "Below Expectation",       short: "BE",  value: 1, color: "#ef4444", bg: "rgba(239,68,68,0.1)"   },
@@ -161,6 +164,7 @@ function StudentRow({ student, index, learningAreas }: { student: any; index: nu
 }
 
 export default function TeacherDashboard() {
+  const router = useRouter();
   const [learningAreas, setLearningAreas] = useState<any[]>([]);
   const [classes, setClasses] = useState<any[]>([]);
   const [selectedClass, setSelectedClass] = useState<any>(null);
@@ -217,6 +221,16 @@ export default function TeacherDashboard() {
   return (
     <div className="min-h-screen w-full" style={{ backgroundColor: "#f8fafc" }}>
       <div className="max-w-6xl mx-auto px-5 py-8 md:py-12">
+        {/* Back and Home Buttons */}
+        <div className="flex items-center gap-4 mb-6" style={{ animation: "fadeIn 0.8s ease-out both" }}>
+          <button onClick={() => router.back()} className="flex items-center gap-2 text-[14px] font-bold text-slate-400 hover:text-sky-600 transition-colors">
+            <ArrowLeft size={16} strokeWidth={2.5} /> Back
+          </button>
+          <Link href="/" className="flex items-center gap-2 text-[14px] font-bold text-slate-400 hover:text-sky-600 transition-colors">
+            <Home size={16} strokeWidth={2.5} /> Home
+          </Link>
+        </div>
+
         <div className="mb-8" style={{ animation: "fadeIn 0.8s ease-out both" }}>
           <p className="text-sm text-slate-400 mb-1">Teacher Portal · CBC Kenya</p>
           <h1 className="text-2xl md:text-3xl font-bold text-slate-800">

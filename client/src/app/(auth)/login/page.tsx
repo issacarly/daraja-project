@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Mail, Lock, LogIn } from "lucide-react";
+import { ArrowLeft, Home, Mail, Lock, LogIn } from "lucide-react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 
@@ -73,9 +73,14 @@ export default function Login() {
             <span className="text-xl font-black tracking-widest text-slate-800 leading-none">DARAJA</span>
           </Link>
 
-          <Link href="/" className="flex items-center gap-2 text-[14px] font-bold text-slate-400 hover:text-sky-600 transition-colors">
-            <ArrowLeft size={16} strokeWidth={2.5} /> Home
-          </Link>
+          <div className="flex items-center gap-4">
+            <button onClick={() => router.back()} className="flex items-center gap-2 text-[14px] font-bold text-slate-400 hover:text-sky-600 transition-colors">
+              <ArrowLeft size={16} strokeWidth={2.5} /> Back
+            </button>
+            <Link href="/" className="flex items-center gap-2 text-[14px] font-bold text-slate-400 hover:text-sky-600 transition-colors">
+              <Home size={16} strokeWidth={2.5} /> Home
+            </Link>
+          </div>
         </div>
 
         {/* Center: Login Form */}

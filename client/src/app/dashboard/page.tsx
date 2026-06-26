@@ -3,8 +3,11 @@
 import React, { useState, useEffect } from "react";
 import {
   Flame, BookOpen, Calculator, FlaskConical, Palette, Globe2,
-  ChevronRight, Clock, Trophy, Sparkles, ArrowRight, CheckCircle2
+  ChevronRight, Clock, Trophy, Sparkles, ArrowRight, CheckCircle2,
+  ArrowLeft, Home
 } from "lucide-react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 /**
  * Daraja — Student Learning Dashboard
@@ -242,6 +245,7 @@ function ContinueCard() {
 }
 
 export default function StudentDashboard() {
+  const router = useRouter();
   const [greeting, setGreeting] = useState("Welcome back");
   const [studentName, setStudentName] = useState("Student");
   const [grade, setGrade] = useState("Grade X");
@@ -270,6 +274,16 @@ export default function StudentDashboard() {
   return (
     <div className="min-h-screen w-full" style={{ backgroundColor: "#f8fafc" }}>
       <div className="max-w-5xl mx-auto px-5 py-8 md:py-12">
+        {/* Back and Home Buttons */}
+        <div className="flex items-center gap-4 mb-6" style={{ animation: "fadeIn 0.8s ease-out both" }}>
+          <button onClick={() => router.back()} className="flex items-center gap-2 text-[14px] font-bold text-slate-400 hover:text-sky-600 transition-colors">
+            <ArrowLeft size={16} strokeWidth={2.5} /> Back
+          </button>
+          <Link href="/" className="flex items-center gap-2 text-[14px] font-bold text-slate-400 hover:text-sky-600 transition-colors">
+            <Home size={16} strokeWidth={2.5} /> Home
+          </Link>
+        </div>
+
         {/* Header */}
         <div
           className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-8"
