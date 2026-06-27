@@ -8,6 +8,11 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { getStudentDashboardData } from "@/app/actions/student";
+
+const IconMap: Record<string, any> = {
+  Flame, BookOpen, Calculator, FlaskConical, Palette, Globe2, Sparkles, Trophy
+};
 
 /**
  * Daraja — Student Learning Dashboard
@@ -29,58 +34,7 @@ const COMPETENCY_LEVELS = [
   "Exceeding Expectation",
 ];
 
-const LEARNING_AREAS = [
-  {
-    id: "math",
-    name: "Mathematics",
-    strand: "Numbers & Operations",
-    icon: Calculator,
-    tint: "#fbbf24",
-    tintSoft: "rgba(251, 191, 36, 0.12)",
-    level: 2,
-    nextLesson: "Fractions: Adding unlike denominators",
-  },
-  {
-    id: "science",
-    name: "Science & Technology",
-    strand: "Living Things & Their Environment",
-    icon: FlaskConical,
-    tint: "#0d9488",
-    tintSoft: "rgba(13, 148, 136, 0.10)",
-    level: 3,
-    nextLesson: "How plants make their own food",
-  },
-  {
-    id: "english",
-    name: "English Activities",
-    strand: "Reading & Comprehension",
-    icon: Globe2,
-    tint: "#7c3aed",
-    tintSoft: "rgba(124, 58, 237, 0.10)",
-    level: 3,
-    nextLesson: "Retelling a short story in your own words",
-  },
-  {
-    id: "kiswahili",
-    name: "Kiswahili",
-    strand: "Kusoma na Kuandika",
-    icon: BookOpen,
-    tint: "#e11d48",
-    tintSoft: "rgba(225, 29, 72, 0.10)",
-    level: 1,
-    nextLesson: "Sentensi sahili — mazoezi",
-  },
-  {
-    id: "creative",
-    name: "Creative Arts",
-    strand: "Art & Craft",
-    icon: Palette,
-    tint: "#0ea5e9",
-    tintSoft: "rgba(14, 165, 233, 0.10)",
-    level: 4,
-    nextLesson: "Mixing primary colours",
-  },
-];
+// We will fetch these dynamically using the Server Action based on user grade.
 
 function CompetencyLadder({ level, tint, compact = false }) {
   return (
@@ -104,11 +58,18 @@ function CompetencyLadder({ level, tint, compact = false }) {
   );
 }
 
-function LearningAreaCard({ area, index }) {
-  const Icon = area.icon;
+function LearningAreaCard({ area, index }: { area: any, index: number }) {
+  const Icon = IconMap[area.icon] || Globe2;
+  // Convert tint hex to rgba soft tint
+  const hexToRgba = (hex: string, alpha: number) => {
+    const r = parseInt(hex.slice(1, 3), 16), g = parseInt(hex.slice(3, 5), 16), b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  };
+  const tintSoft = hexToRgba(area.color, 0.1);
   return (
-    <div
-      className="glass-card rounded-2xl p-5 cursor-pointer group"
+    <Link
+      href={`/dashboard/subject/${area.id}`}
+      className="glass-card rounded-2xl p-5 cursor-pointer group block"
       style={{
         animation: `slideUp 0.6s ease-out ${index * 0.08}s both`,
       }}
@@ -116,9 +77,9 @@ function LearningAreaCard({ area, index }) {
       <div className="flex items-start justify-between mb-4">
         <div
           className="h-11 w-11 rounded-xl flex items-center justify-center"
-          style={{ backgroundColor: area.tintSoft }}
+          style={{ backgroundColor: tintSoft }}
         >
-          <Icon size={20} style={{ color: area.tint }} strokeWidth={2} />
+          <Icon size={20} style={{ color: area.color }} strokeWidth={2} />
         </div>
         <ChevronRight
           size={18}
@@ -129,13 +90,13 @@ function LearningAreaCard({ area, index }) {
       <h3 className="font-semibold text-slate-800 text-[15px] leading-tight">
         {area.name}
       </h3>
-      <p className="text-xs text-slate-400 mt-0.5 mb-4">{area.strand}</p>
+      <p className="text-xs text-slate-400 mt-0.5 mb-4">Core Competency</p>
 
       <div className="flex items-center justify-between mb-4">
-        <CompetencyLadder level={area.level} tint={area.tint} />
+        <CompetencyLadder level={area.level} tint={area.color} />
         <span
           className="text-[11px] font-medium px-2 py-0.5 rounded-full"
-          style={{ backgroundColor: area.tintSoft, color: area.tint }}
+          style={{ backgroundColor: tintSoft, color: area.color }}
         >
           {COMPETENCY_LEVELS[area.level - 1]}
         </span>
@@ -147,7 +108,7 @@ function LearningAreaCard({ area, index }) {
         </p>
         <p className="text-sm text-slate-600 leading-snug">{area.nextLesson}</p>
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -249,6 +210,10 @@ export default function StudentDashboard() {
   const [greeting, setGreeting] = useState("Welcome back");
   const [studentName, setStudentName] = useState("Student");
   const [grade, setGrade] = useState("Grade X");
+  const [coreSubjects, setCoreSubjects] = useState<any[]>([]);
+  const [optionalSubjects, setOptionalSubjects] = useState<any[]>([]);
+  const [mappedGrade, setMappedGrade] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const hour = new Date().getHours();
@@ -261,15 +226,34 @@ export default function StudentDashboard() {
       try {
         const user = JSON.parse(userStr);
         if (user.name) setStudentName(user.name);
-        if (user.grade) setGrade(user.grade);
+        if (user.grade) {
+          setGrade(user.grade);
+          // Fetch the dynamic dashboard data!
+          getStudentDashboardData(user.grade)
+            .then(data => {
+              setCoreSubjects(data.coreSubjects);
+              setOptionalSubjects(data.optionalSubjects);
+              setMappedGrade(data.mappedGrade);
+              setIsLoading(false);
+            })
+            .catch(console.error);
+        } else {
+          setIsLoading(false);
+        }
       } catch (e) {
         console.error("Error parsing user from localStorage", e);
+        setIsLoading(false);
       }
+    } else {
+      setIsLoading(false);
     }
   }, []);
 
-  const overallLevel =
-    LEARNING_AREAS.reduce((sum, a) => sum + a.level, 0) / LEARNING_AREAS.length;
+  const overallLevel = coreSubjects.length > 0
+    ? coreSubjects.reduce((sum, a) => sum + a.level, 0) / coreSubjects.length
+    : 2;
+    
+  const isJuniorSchool = ["GRADE_7", "GRADE_8", "GRADE_9"].includes(mappedGrade);
 
   return (
     <div className="min-h-screen w-full" style={{ backgroundColor: "#f8fafc" }}>
@@ -311,20 +295,54 @@ export default function StudentDashboard() {
           <ContinueCard />
         </div>
 
-        {/* Learning Areas */}
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="font-semibold text-slate-800">Your learning areas</h2>
-          <div className="flex items-center gap-2 text-xs text-slate-400">
-            <span>Overall</span>
-            <CompetencyLadder level={Math.round(overallLevel)} tint="#1d4ed8" compact />
+        {isLoading ? (
+          <div className="text-center py-12">
+            <div className="animate-spin h-8 w-8 border-4 border-sky-500 border-t-transparent rounded-full mx-auto mb-4"></div>
+            <p className="text-slate-500 font-medium">Loading your curriculum...</p>
           </div>
-        </div>
+        ) : (
+          <>
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="font-semibold text-slate-800">Your core learning areas</h2>
+              <div className="flex items-center gap-2 text-xs text-slate-400">
+                <span>Overall</span>
+                <CompetencyLadder level={Math.round(overallLevel)} tint="#1d4ed8" compact />
+              </div>
+            </div>
 
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-          {LEARNING_AREAS.map((area, i) => (
-            <LearningAreaCard key={area.id} area={area} index={i} />
-          ))}
-        </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+              {coreSubjects.map((area, i) => (
+                <LearningAreaCard key={area.id} area={area} index={i} />
+              ))}
+              {coreSubjects.length === 0 && <p className="text-sm text-slate-500">No core subjects found for your grade.</p>}
+            </div>
+
+            {isJuniorSchool && (
+              <>
+                <div className="flex items-center justify-between mt-8 mb-4">
+                  <h2 className="font-semibold text-slate-800 flex items-center gap-2">
+                    <Sparkles size={16} className="text-pink-500" />
+                    Optional Subjects
+                  </h2>
+                </div>
+                {optionalSubjects.length > 0 ? (
+                  <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8 bg-pink-50/50 p-6 rounded-[2rem] border-2 border-pink-100/50">
+                    {optionalSubjects.map((area, i) => (
+                      <LearningAreaCard key={area.id} area={area} index={i} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="glass-card rounded-2xl p-6 text-center border-dashed mb-8">
+                    <p className="text-sm text-slate-500 font-medium">You haven't selected an optional subject yet.</p>
+                    <button className="mt-3 px-4 py-2 bg-pink-500 hover:bg-pink-600 text-white text-xs font-bold rounded-full transition-colors">
+                      Choose Optional Subject
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </>
+        )}
 
         {/* Footer ladder legend */}
         <div

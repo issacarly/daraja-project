@@ -38,10 +38,10 @@ export default function Home() {
           
           {/* Center Links */}
           <div className="hidden lg:flex items-center gap-12 text-[17px] font-bold text-slate-600">
-            <Link href="#" className="text-sky-600 relative after:absolute after:bottom-[-6px] after:left-0 after:h-[3px] after:w-full after:bg-sky-500 after:rounded-full transition-colors">Home</Link>
-            <Link href="#" className="hover:text-sky-600 transition-colors">Grades</Link>
-            <Link href="#" className="hover:text-sky-600 transition-colors">Subjects</Link>
-            <Link href="#" className="hover:text-sky-600 transition-colors">About Us</Link>
+            <Link href="/" className="text-sky-600 relative after:absolute after:bottom-[-6px] after:left-0 after:h-[3px] after:w-full after:bg-sky-500 after:rounded-full transition-colors">Home</Link>
+            <Link href="/grades" className="hover:text-sky-600 transition-colors">Grades</Link>
+            <Link href="/subjects" className="hover:text-sky-600 transition-colors">Subjects</Link>
+            <Link href="/about" className="hover:text-sky-600 transition-colors">About Us</Link>
           </div>
 
           {/* Right Actions */}
