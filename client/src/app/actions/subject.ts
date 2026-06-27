@@ -114,3 +114,15 @@ export async function getSubjectDetails(subjectId: string, studentId?: string) {
     };
   }
 }
+
+export async function getAllSubjects() {
+  try {
+    const subjects = await prisma.subject.findMany({
+      orderBy: [{ grade: "asc" }, { name: "asc" }]
+    });
+    return { success: true, subjects };
+  } catch (error: any) {
+    console.error("Error fetching all subjects:", error);
+    return { success: false, message: error.message };
+  }
+}
