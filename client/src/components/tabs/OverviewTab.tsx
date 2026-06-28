@@ -41,8 +41,8 @@ function TermSummaryCard({
 
   return (
     <div
-      className={`glass-card rounded-2xl p-5 ${isCurrent ? "ring-2" : ""}`}
-      style={isCurrent ? { ringColor: color } : {}}
+      className="glass-card rounded-2xl p-5"
+      style={isCurrent ? { boxShadow: `0 0 0 2px ${color}` } : {}}
     >
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-bold text-slate-800 text-sm">{TERM_LABELS[term.term]}</h3>
