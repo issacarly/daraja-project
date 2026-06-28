@@ -36,7 +36,7 @@ const COMPETENCY_LEVELS = [
 
 // We will fetch these dynamically using the Server Action based on user grade.
 
-function CompetencyLadder({ level, tint, compact = false }) {
+function CompetencyLadder({ level, tint, compact = false }: { level: number, tint: string, compact?: boolean }) {
   return (
     <div
       className="flex items-center gap-1"
@@ -112,7 +112,7 @@ function LearningAreaCard({ area, index }: { area: any, index: number }) {
   );
 }
 
-function StreakBadge({ days }) {
+function StreakBadge({ days }: { days: number }) {
   return (
     <div className="glass-card rounded-2xl px-5 py-4 flex items-center gap-3">
       <div
