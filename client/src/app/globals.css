@@ -94,3 +94,54 @@ body {
   0% { opacity: 0; }
   100% { opacity: 1; }
 }
+
+/* ─── Add these to your globals.css (or app/globals.css) ─────────────────────
+   These extend the existing glass / text-gradient / animate-* system
+   without replacing anything. Paste below your existing @layer utilities block.
+   ──────────────────────────────────────────────────────────────────────────── */
+
+/* Scrolling subject ticker */
+@keyframes ticker {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-ticker {
+  animation: ticker 22s linear infinite;
+  will-change: transform;
+}
+
+/* Respect reduced-motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .animate-ticker,
+  .animate-float,
+  .animate-float-delayed,
+  .animate-pulse-glow {
+    animation: none;
+  }
+}
+
+/* Utility: hide scrollbar while preserving scroll */
+.no-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* ─── Mobile nav open: prevent body scroll ──────────────────────────────── */
+.nav-open {
+  overflow: hidden;
+}
+
+/* ─── Prose max-width cap for readability ───────────────────────────────── */
+.prose-cap {
+  max-width: 65ch;
+}
+
+/* ─── Touch-friendly tap targets (min 44px) ─────────────────────────────── */
+.tap-target {
+  min-height: 44px;
+  min-width: 44px;
+}

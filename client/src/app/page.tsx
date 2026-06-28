@@ -1,200 +1,332 @@
+"use client";
 import Link from "next/link";
 import Image from "next/image";
-import { Search, ShoppingCart, User, Users, GraduationCap, ChevronDown, Sparkles, BookOpen, Star } from "lucide-react";
+import { useState } from "react";
 
-export default function Home() {
+// ─── Mobile-first landing page for Daraja CBC Learning Platform ─────────────
+// Key mobile fixes applied:
+//  1. Navbar  — hamburger menu on mobile, full nav on md+
+//  2. Hero    — single-column stack, headline breaks on semantic boundary
+//  3. Portals — single column on mobile, row on sm+
+//  4. Stats   — 2-col grid on mobile, 3-col on sm+
+//  5. CTAs    — full-width stacked buttons on mobile
+//  6. Photo   — constrained height, object-cover
+//  7. Ticker  — proper overflow-hidden mask, no bleed
+//  8. Footer  — stacked on mobile, row on md+
+
+const NAV_LINKS = [
+  { label: "Home",     href: "/"        },
+  { label: "Grades",   href: "/grades"  },
+  { label: "Subjects", href: "/subjects"},
+  { label: "About",    href: "/about"   },
+];
+
+const PORTALS = [
+  {
+    role:  "Student Portal",
+    range: "Grades 4–9",
+    icon:  "🎒",
+    desc:  "Track your progress, take quizzes, and join live classes.",
+    href:  "/register?role=student",
+    color: "#0ea5e9",
+    bg:    "rgba(14,165,233,0.08)",
+  },
+  {
+    role:  "Guardian Portal",
+    range: "Grades 1–3",
+    icon:  "👨‍👩‍👧",
+    desc:  "Monitor your child's learning journey and CBC progress.",
+    href:  "/register?role=guardian",
+    color: "#10b981",
+    bg:    "rgba(16,185,129,0.08)",
+  },
+  {
+    role:  "Teacher Portal",
+    range: "All Grades",
+    icon:  "📚",
+    desc:  "Host live classes, set assessments, and track your class.",
+    href:  "/register?role=teacher",
+    color: "#7c3aed",
+    bg:    "rgba(124,58,237,0.08)",
+  },
+];
+
+const STATS = [
+  { value: "9",    label: "Grade levels",     sub: "Complete coverage" },
+  { value: "6+",   label: "CBC subjects",     sub: "Per grade level"   },
+  { value: "100+", label: "Quizzes",          sub: "Interactive tests" },
+];
+
+const SUBJECTS = [
+  "Mathematics 📐", "English 📖", "Creative Arts 🎨",
+  "Science 🔬", "Kiswahili 🌍", "Social Studies ⚙️",
+];
+
+export default function LandingPage() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
-    <main className="min-h-screen bg-slate-50 text-slate-800 font-sans relative overflow-x-hidden flex flex-col selection:bg-sky-200 selection:text-sky-900">
-      
-      {/* Background Glowing Orbs */}
-      <div className="absolute top-[-10%] left-[-5%] w-[40%] h-[50%] rounded-full bg-sky-200/50 blur-[120px] pointer-events-none animate-pulse-glow" />
-      <div className="absolute bottom-[-10%] right-[-5%] w-[50%] h-[60%] rounded-full bg-amber-100/40 blur-[120px] pointer-events-none animate-pulse-glow" style={{ animationDelay: '2s' }} />
-      <div className="absolute top-[20%] right-[10%] w-[30%] h-[30%] rounded-full bg-slate-200/50 blur-[100px] pointer-events-none animate-pulse-glow" style={{ animationDelay: '1s' }} />
+    <div className="min-h-screen" style={{ backgroundColor: "#f8fafc", color: "#1e293b" }}>
 
-      {/* Decorative Floating Objects */}
-      <div className="absolute top-[30%] left-[5%] text-amber-400 opacity-60 animate-float" style={{ animationDelay: '0.5s' }}>
-        <Star size={48} fill="currentColor" />
-      </div>
-      <div className="absolute top-[60%] left-[45%] text-sky-400 opacity-40 animate-float" style={{ animationDelay: '1.5s' }}>
-        <BookOpen size={56} />
-      </div>
-      <div className="absolute top-[15%] right-[35%] w-16 h-16 rounded-full border-4 border-sky-300 opacity-50 animate-float" style={{ animationDelay: '2.5s' }}></div>
-      <div className="absolute bottom-[25%] left-[2%] w-10 h-10 bg-amber-300 rounded-lg rotate-12 opacity-40 animate-float" style={{ animationDelay: '1s' }}></div>
+      {/* ── Navbar ─────────────────────────────────────────────────────────── */}
+      <nav className="sticky top-0 z-50 w-full glass border-b border-white/40">
+        <div className="max-w-6xl mx-auto px-5 h-16 flex items-center justify-between gap-4">
 
-      {/* Floating Navbar */}
-      <div className="w-full px-8 pt-8 pb-2 sticky top-0 z-50 animate-fade-in">
-        <nav className="glass mx-auto max-w-[1500px] rounded-[2.5rem] px-10 py-5 flex items-center justify-between transition-all duration-300 shadow-xl shadow-slate-200/50 border border-white/80">
-          
-          {/* Logo Area (Made significantly larger per request) */}
-          <div className="flex items-center gap-5">
-            <div className="flex h-20 w-20 items-center justify-center overflow-hidden rounded-full border-2 border-slate-100 bg-white shadow-md">
-              <Image src="/daraja-logo.png" alt="Daraja Logo" width={64} height={64} className="h-16 w-16 object-contain" />
-            </div>
-            <div className="flex flex-col">
-              <span className="text-[2.75rem] font-black tracking-widest text-slate-800 leading-none drop-shadow-sm">DARAJA</span>
-              <span className="text-[14px] font-bold text-sky-600 tracking-[0.2em] uppercase mt-1">Learning Platform</span>
-            </div>
-          </div>
-          
-          {/* Center Links */}
-          <div className="hidden lg:flex items-center gap-12 text-[17px] font-bold text-slate-600">
-            <Link href="/" className="text-sky-600 relative after:absolute after:bottom-[-6px] after:left-0 after:h-[3px] after:w-full after:bg-sky-500 after:rounded-full transition-colors">Home</Link>
-            <Link href="/grades" className="hover:text-sky-600 transition-colors">Grades</Link>
-            <Link href="/subjects" className="hover:text-sky-600 transition-colors">Subjects</Link>
-            <Link href="/about" className="hover:text-sky-600 transition-colors">About Us</Link>
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2.5 shrink-0">
+            <Image src="/daraja-logo.png" alt="Daraja logo" width={36} height={36} className="rounded-lg" />
+            <span className="font-black text-slate-800 text-base leading-tight">
+              DARAJA<br />
+              <span className="text-[10px] font-semibold tracking-widest text-slate-400 uppercase">Learning Platform</span>
+            </span>
+          </Link>
+
+          {/* Desktop nav */}
+          <div className="hidden md:flex items-center gap-6">
+            {NAV_LINKS.map((l) => (
+              <Link key={l.href} href={l.href}
+                className="text-sm font-medium text-slate-600 hover:text-sky-600 transition-colors">
+                {l.label}
+              </Link>
+            ))}
           </div>
 
-          {/* Right Actions */}
-          <div className="flex items-center gap-6">
-            <button className="text-slate-500 hover:text-sky-600 transition-colors"><Search size={26} strokeWidth={2.5} /></button>
-            <button className="text-slate-500 hover:text-sky-600 transition-colors"><ShoppingCart size={26} strokeWidth={2.5} /></button>
-            <div className="h-8 w-[2px] bg-slate-200 mx-2"></div>
-            <Link href="/login" className="text-[16px] font-bold text-slate-600 hover:text-sky-600 transition-colors hidden sm:block">
-              Login
-            </Link>
-            <Link href="/register" className="flex items-center gap-2 rounded-full bg-sky-600 px-8 py-3.5 text-[16px] font-bold text-white shadow-lg shadow-sky-500/30 hover:shadow-sky-500/50 hover:scale-105 transition-all duration-300">
-              Start Free <Sparkles size={18} className="text-amber-200" />
-            </Link>
-          </div>
-        </nav>
-      </div>
+          {/* Desktop CTA */}
+          <Link href="/register"
+            className="hidden md:inline-flex items-center px-4 py-2 rounded-xl text-sm font-bold text-white bg-sky-600 hover:bg-sky-700 transition-colors shrink-0">
+            Start Free
+          </Link>
 
-      {/* Hero Section - STRICT 2-COLUMN LAYOUT */}
-      <section className="flex-1 w-full mx-auto max-w-[1500px] px-8 pt-12 pb-16 grid grid-cols-1 lg:grid-cols-2 gap-12 relative z-10 items-center">
-        
-        {/* Left Column (Text & Buttons) */}
-        <div className="space-y-8 animate-slide-up justify-self-start text-left w-full">
-          
-          <div className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-white/90 border border-slate-200 shadow-sm text-sm font-bold text-slate-600 mb-2">
-            <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse"></span>
-            Kenya CBC Curriculum Aligned
-          </div>
-
-          <h1 className="text-[3.5rem] xl:text-[4.8rem] font-black leading-[1.05] text-slate-800 tracking-tight">
-            Bridging online CBC<br />
-            resources to your <br />
-            <span className="text-gradient block mt-2">physical classroom.</span>
-          </h1>
-          
-          <p className="text-[1.35rem] text-slate-600 font-medium max-w-[38rem] leading-relaxed">
-            Practice quizzes from your actual textbooks, track progress, and master every subject from Grade 1 to Grade 9.
-          </p>
-
-          {/* Buttons Group (Fixed identical sizing without overlapping) */}
-          <div className="flex flex-col sm:flex-row items-center justify-start gap-5 pt-2">
-            <Link href="/register" className="flex w-[260px] h-[60px] items-center justify-center gap-2 rounded-full bg-slate-800 text-[17px] font-bold text-white shadow-xl shadow-slate-800/20 hover:bg-slate-700 hover:scale-[1.03] transition-all duration-300">
-              Start Learning Free <Sparkles size={18} className="text-amber-300" />
-            </Link>
-            <Link href="/login" className="flex w-[260px] h-[60px] items-center justify-center rounded-full bg-white text-[17px] font-bold text-slate-700 border-2 border-slate-200 shadow-sm hover:border-sky-300 hover:bg-sky-50 hover:scale-[1.03] transition-all duration-300">
-              I Have an Account
-            </Link>
-          </div>
-
-          {/* Floating Portal Cards */}
-          <div className="pt-10 grid grid-cols-3 gap-6 max-w-[650px]">
-            <div className="glass-card flex flex-col items-center justify-center text-center p-6 rounded-[2rem] animate-float relative overflow-hidden group">
-              <div className="absolute inset-0 bg-sky-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
-              <div className="w-14 h-14 rounded-full bg-sky-100 flex items-center justify-center mb-4 text-sky-600 group-hover:bg-white group-hover:shadow-sm transition-colors duration-300">
-                <User size={28} strokeWidth={2.5} />
-              </div>
-              <p className="text-[16px] font-bold text-slate-800">Student Portal</p>
-              <p className="text-[13px] font-medium text-slate-500 mt-1">Grades 4-9</p>
-            </div>
-            
-            <div className="glass-card flex flex-col items-center justify-center text-center p-6 rounded-[2rem] animate-float relative overflow-hidden group" style={{ animationDelay: '1s' }}>
-              <div className="absolute inset-0 bg-amber-100 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
-              <div className="w-14 h-14 rounded-full bg-amber-100 flex items-center justify-center mb-4 text-amber-600 group-hover:bg-white group-hover:shadow-sm transition-colors duration-300">
-                <Users size={28} strokeWidth={2.5} />
-              </div>
-              <p className="text-[16px] font-bold text-slate-800">Guardian Portal</p>
-              <p className="text-[13px] font-medium text-slate-500 mt-1">Grades 1-3</p>
-            </div>
-            
-            <div className="glass-card flex flex-col items-center justify-center text-center p-6 rounded-[2rem] animate-float relative overflow-hidden group" style={{ animationDelay: '2s' }}>
-              <div className="absolute inset-0 bg-slate-200 opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10"></div>
-              <div className="w-14 h-14 rounded-full bg-slate-100 flex items-center justify-center mb-4 text-slate-600 group-hover:bg-white group-hover:shadow-sm transition-colors duration-300">
-                <GraduationCap size={28} strokeWidth={2.5} />
-              </div>
-              <p className="text-[16px] font-bold text-slate-800">Teacher Portal</p>
-              <p className="text-[13px] font-medium text-slate-500 mt-1">All Grades</p>
-            </div>
-          </div>
+          {/* Mobile hamburger */}
+          <button
+            onClick={() => setMenuOpen(!menuOpen)}
+            aria-label={menuOpen ? "Close menu" : "Open menu"}
+            className="md:hidden flex flex-col gap-1.5 p-2 rounded-lg hover:bg-slate-100 transition-colors">
+            <span className={`block h-0.5 w-5 bg-slate-700 transition-all duration-200 ${menuOpen ? "rotate-45 translate-y-2" : ""}`} />
+            <span className={`block h-0.5 w-5 bg-slate-700 transition-all duration-200 ${menuOpen ? "opacity-0" : ""}`} />
+            <span className={`block h-0.5 w-5 bg-slate-700 transition-all duration-200 ${menuOpen ? "-rotate-45 -translate-y-2" : ""}`} />
+          </button>
         </div>
 
-        {/* Right Column (Image + Dashboard Layout) */}
-        <div className="relative animate-slide-up justify-self-end w-full max-w-[650px] h-[600px] flex items-center justify-center" style={{ animationDelay: '0.2s' }}>
-          
-          {/* Blended Image Container (No rigid borders, blends into background) */}
-          <div className="relative w-full h-full z-10 mix-blend-multiply">
-            <Image 
-              src="/landing-photo.jpg" 
-              alt="Kenyan Students"
-              fill
-              sizes="(max-width: 768px) 100vw, 50vw"
-              className="object-contain object-center xl:object-right drop-shadow-2xl"
-              priority
-            />
+        {/* Mobile dropdown menu */}
+        {menuOpen && (
+          <div className="md:hidden bg-white/95 backdrop-blur-md border-t border-slate-100 px-5 py-4 space-y-1">
+            {NAV_LINKS.map((l) => (
+              <Link key={l.href} href={l.href}
+                onClick={() => setMenuOpen(false)}
+                className="flex items-center h-11 text-sm font-medium text-slate-700 hover:text-sky-600 transition-colors">
+                {l.label}
+              </Link>
+            ))}
+            <div className="pt-2 border-t border-slate-100">
+              <Link href="/register"
+                className="flex items-center justify-center h-11 rounded-xl text-sm font-bold text-white bg-sky-600 hover:bg-sky-700 transition-colors">
+                Start Free
+              </Link>
+            </div>
           </div>
+        )}
+      </nav>
 
-          {/* Glowing Accent behind image to highlight the transparent effect */}
-          <div className="absolute top-1/4 right-[10%] w-[80%] h-[60%] rounded-full bg-gradient-to-br from-sky-400 to-amber-300 blur-[80px] opacity-30 -z-10 animate-pulse-glow" />
+      {/* ── Hero ───────────────────────────────────────────────────────────── */}
+      <section className="max-w-6xl mx-auto px-5 pt-12 pb-8 md:pt-20 md:pb-16">
 
-          {/* Floating Stats Dashboard (Overlapping image) */}
-          <div className="glass absolute -left-[10%] top-[60%] -translate-y-1/2 rounded-[2.5rem] p-6 flex flex-col gap-6 z-20 shadow-2xl shadow-slate-800/10 border-[1.5px] border-white/80 animate-float-delayed bg-white/70">
-            
-            <div className="flex items-center gap-3 text-slate-800 font-black text-[1.2rem] mb-1 border-b-2 border-slate-200 pb-3">
-              <div className="w-8 h-8 rounded-full bg-sky-100 flex items-center justify-center">
-                <ChevronDown size={18} strokeWidth={3} className="text-sky-600" />
-              </div>
-              Platform Info
-            </div>
-
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-white shadow-sm flex items-center justify-center text-xl font-black text-slate-800 border border-slate-100">9</div>
-              <div>
-                <p className="text-[13px] font-bold text-slate-500 uppercase tracking-widest">Grade Levels</p>
-                <p className="text-[15px] font-bold text-slate-800 mt-0.5">Complete Coverage</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-white shadow-sm flex items-center justify-center text-xl font-black text-sky-600 border border-slate-100">6+</div>
-              <div>
-                <p className="text-[13px] font-bold text-slate-500 uppercase tracking-widest">CBC Subjects</p>
-                <p className="text-[15px] font-bold text-slate-800 mt-0.5">Per Grade Level</p>
-              </div>
-            </div>
-            
-            <div className="flex items-center gap-4">
-              <div className="w-14 h-14 rounded-2xl bg-white shadow-sm flex items-center justify-center text-xl font-black text-amber-500 border border-slate-100">100+</div>
-              <div>
-                <p className="text-[13px] font-bold text-slate-500 uppercase tracking-widest">Quizzes</p>
-                <p className="text-[15px] font-bold text-slate-800 mt-0.5">Interactive Tests</p>
-              </div>
-            </div>
-
-          </div>
+        {/* Kenya CBC badge */}
+        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold mb-6"
+          style={{ backgroundColor: "rgba(14,165,233,0.1)", color: "#0284c7" }}>
+          <span className="w-2 h-2 rounded-full bg-sky-500 animate-pulse" />
+          Kenya CBC Curriculum Aligned
         </div>
 
+        {/* Headline — breaks at semantic boundary on all sizes */}
+        <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black text-slate-800 leading-tight tracking-tight mb-5 max-w-3xl">
+          Bridging online CBC{" "}
+          <span className="text-gradient">resources</span>{" "}
+          to your classroom.
+        </h1>
+
+        <p className="text-base md:text-lg text-slate-500 leading-relaxed mb-8 max-w-xl">
+          Practice quizzes from your actual textbooks, track progress,
+          and master every subject from Grade 1 to Grade 9.
+        </p>
+
+        {/* CTAs — stacked on mobile, side-by-side on sm+ */}
+        <div className="flex flex-col sm:flex-row gap-3 mb-10 sm:mb-12">
+          <Link href="/register"
+            className="flex items-center justify-center px-6 py-3.5 rounded-2xl text-base font-bold text-white bg-sky-600 hover:bg-sky-700 active:scale-[0.98] transition-all text-center">
+            Start Learning Free
+          </Link>
+          <Link href="/login"
+            className="flex items-center justify-center px-6 py-3.5 rounded-2xl text-base font-bold text-slate-700 bg-white border border-slate-200 hover:border-sky-300 hover:text-sky-600 active:scale-[0.98] transition-all text-center">
+            I Have an Account
+          </Link>
+        </div>
+
+        {/* Portal cards — single column on mobile, 3-col on sm+ */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 mb-10">
+          {PORTALS.map((p) => (
+            <Link key={p.role} href={p.href}
+              className="glass-card rounded-2xl p-4 flex items-start gap-3 group hover:shadow-md transition-all">
+              <span className="text-2xl shrink-0 mt-0.5">{p.icon}</span>
+              <div className="min-w-0">
+                <p className="font-bold text-slate-800 text-sm leading-snug">{p.role}</p>
+                <p className="text-[11px] font-semibold mb-1.5" style={{ color: p.color }}>{p.range}</p>
+                <p className="text-xs text-slate-500 leading-relaxed">{p.desc}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+
+        {/* Hero photo — constrained, object-cover */}
+        <div className="relative w-full rounded-3xl overflow-hidden"
+          style={{ height: "clamp(200px, 40vw, 420px)" }}>
+          <Image
+            src="/landing-photo.jpg"
+            alt="Kenyan students learning with Daraja"
+            fill
+            className="object-cover object-top"
+            priority
+          />
+          {/* Subtle gradient overlay at bottom so it blends into the next section */}
+          <div className="absolute inset-x-0 bottom-0 h-16 bg-gradient-to-t from-slate-50 to-transparent" />
+        </div>
       </section>
 
-      {/* Bottom Subjects Bar */}
-      <div className="w-full bg-white/70 backdrop-blur-xl border-t-2 border-slate-200 py-6 relative mt-auto z-20">
-        <div className="max-w-[1500px] mx-auto px-10 flex items-center justify-center flex-wrap gap-y-4 text-[1.2rem] font-bold text-slate-600 tracking-wider">
-          <span className="flex items-center gap-2.5 mx-5 hover:text-sky-600 transition-colors cursor-pointer hover:scale-105 duration-200">Mathematics 📐</span> <span className="text-slate-300 font-light hidden sm:inline">|</span>
-          <span className="flex items-center gap-2.5 mx-5 hover:text-sky-600 transition-colors cursor-pointer hover:scale-105 duration-200">English 📖</span> <span className="text-slate-300 font-light hidden sm:inline">|</span>
-          <span className="flex items-center gap-2.5 mx-5 hover:text-sky-600 transition-colors cursor-pointer hover:scale-105 duration-200">Creative Arts 🎨</span> <span className="text-slate-300 font-light hidden lg:inline">|</span>
-          <span className="flex items-center gap-2.5 mx-5 hover:text-sky-600 transition-colors cursor-pointer hover:scale-105 duration-200">Science 🔬</span> <span className="text-slate-300 font-light hidden sm:inline">|</span>
-          <span className="flex items-center gap-2.5 mx-5 hover:text-sky-600 transition-colors cursor-pointer hover:scale-105 duration-200">Kiswahili 🌍</span> <span className="text-slate-300 font-light hidden sm:inline">|</span>
-          <span className="flex items-center gap-2.5 mx-5 hover:text-sky-600 transition-colors cursor-pointer hover:scale-105 duration-200">Social Studies ⚙️</span>
-        </div>
-      </div>
+      {/* ── Stats ──────────────────────────────────────────────────────────── */}
+      <section className="max-w-6xl mx-auto px-5 py-10 md:py-16">
+        <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-6 text-center">Platform info</p>
 
-      {/* Footer */}
-      <footer className="w-full bg-slate-900 py-5 text-center text-[14px] text-slate-400 tracking-wider font-semibold z-20">
-        Daraja • Kenya CBC Learning Platform • Grades 1–9 • Aligned with the Kenya Institute of Curriculum Development (KICD)
+        {/* 2-col on mobile (3rd item full-width), 3-col on sm+ */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          {STATS.map((s, i) => (
+            <div key={s.label}
+              className={`glass-card rounded-2xl p-5 text-center ${i === 2 ? "col-span-2 sm:col-span-1" : ""}`}>
+              <p className="text-3xl font-black text-slate-800 mb-1">{s.value}</p>
+              <p className="text-sm font-bold text-slate-700">{s.label}</p>
+              <p className="text-xs text-slate-400 mt-0.5">{s.sub}</p>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Subject ticker ─────────────────────────────────────────────────── */}
+      <section className="py-8 overflow-hidden">
+        <div className="relative">
+          {/* Fade masks */}
+          <div className="absolute left-0 top-0 bottom-0 w-12 z-10 pointer-events-none"
+            style={{ background: "linear-gradient(to right, #f8fafc, transparent)" }} />
+          <div className="absolute right-0 top-0 bottom-0 w-12 z-10 pointer-events-none"
+            style={{ background: "linear-gradient(to left, #f8fafc, transparent)" }} />
+
+          {/* Ticker track */}
+          <div className="flex gap-4 animate-ticker whitespace-nowrap">
+            {[...SUBJECTS, ...SUBJECTS].map((s, i) => (
+              <span key={i}
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold text-slate-600 glass-card shrink-0">
+                {s}
+              </span>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* ── Why Daraja ─────────────────────────────────────────────────────── */}
+      <section className="max-w-6xl mx-auto px-5 py-10 md:py-16">
+        <p className="text-xs font-bold uppercase tracking-widest text-slate-400 mb-2">Why Daraja</p>
+        <h2 className="text-2xl md:text-3xl font-black text-slate-800 mb-8 max-w-md leading-tight">
+          Built around how CBC actually works
+        </h2>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          {[
+            {
+              title: "Aligned with KICD",
+              desc: "Every lesson and quiz maps to the official Kenya Institute of Curriculum Development strands.",
+              icon: "🇰🇪",
+            },
+            {
+              title: "Competency-based tracking",
+              desc: "Progress shown as BE / AE / ME / EE — the real CBC assessment scale, not percentages.",
+              icon: "📊",
+            },
+            {
+              title: "Live classes with your teacher",
+              desc: "Join real-time sessions hosted by your school's teacher, with recordings available after.",
+              icon: "🎥",
+            },
+            {
+              title: "Past papers & exam prep",
+              desc: "School papers, KNEC-style mocks, and formative quizzes all in one place.",
+              icon: "📝",
+            },
+          ].map((f) => (
+            <div key={f.title} className="glass-card rounded-2xl p-5 flex items-start gap-4">
+              <span className="text-2xl shrink-0">{f.icon}</span>
+              <div>
+                <p className="font-bold text-slate-800 mb-1">{f.title}</p>
+                <p className="text-sm text-slate-500 leading-relaxed">{f.desc}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Final CTA banner ───────────────────────────────────────────────── */}
+      <section className="max-w-6xl mx-auto px-5 pb-16">
+        <div className="rounded-3xl p-8 md:p-12 text-center relative overflow-hidden"
+          style={{ background: "linear-gradient(135deg, #0ea5e9, #1d4ed8)" }}>
+          {/* Decorative circles */}
+          <div className="absolute -top-10 -right-10 w-40 h-40 rounded-full bg-white/10" />
+          <div className="absolute -bottom-8 -left-8 w-32 h-32 rounded-full bg-white/10" />
+
+          <div className="relative z-10">
+            <p className="text-white/70 text-sm font-semibold mb-2">Free for all students</p>
+            <h2 className="text-2xl md:text-4xl font-black text-white mb-3 leading-tight">
+              Start your CBC journey today
+            </h2>
+            <p className="text-white/80 text-sm md:text-base mb-8 max-w-md mx-auto">
+              Join thousands of Kenyan learners building real skills across all 9 grade levels.
+            </p>
+            <div className="flex flex-col sm:flex-row gap-3 justify-center">
+              <Link href="/register"
+                className="flex items-center justify-center px-6 py-3.5 rounded-2xl font-bold text-sky-700 bg-white hover:bg-slate-50 active:scale-[0.98] transition-all">
+                Create free account
+              </Link>
+              <Link href="/grades"
+                className="flex items-center justify-center px-6 py-3.5 rounded-2xl font-bold text-white border-2 border-white/40 hover:border-white/70 active:scale-[0.98] transition-all">
+                Browse grades
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ── Footer ─────────────────────────────────────────────────────────── */}
+      <footer className="border-t border-slate-200 bg-white/60">
+        <div className="max-w-6xl mx-auto px-5 py-8">
+          {/* Stack on mobile, row on md+ */}
+          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div className="flex items-center gap-2.5">
+              <Image src="/daraja-logo.png" alt="Daraja" width={28} height={28} className="rounded-md" />
+              <span className="text-sm font-bold text-slate-700">Daraja • CBC Learning Platform</span>
+            </div>
+
+            {/* Footer nav — wraps naturally on mobile */}
+            <div className="flex flex-wrap gap-x-5 gap-y-2">
+              {NAV_LINKS.map((l) => (
+                <Link key={l.href} href={l.href}
+                  className="text-xs text-slate-500 hover:text-sky-600 transition-colors">
+                  {l.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+
+          <p className="text-xs text-slate-400 mt-6 leading-relaxed">
+            Grades 1–9 · Aligned with the Kenya Institute of Curriculum Development (KICD)
+          </p>
+        </div>
       </footer>
-      
-    </main>
+    </div>
   );
 }
