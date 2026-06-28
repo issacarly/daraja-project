@@ -18,7 +18,7 @@ export default function SubjectsPage() {
   useEffect(() => {
     getAllSubjects().then(res => {
       if (res.success) {
-        setSubjects(res.subjects);
+        setSubjects(res.subjects || []);
       }
       setIsLoading(false);
     });
