@@ -12,7 +12,7 @@ export async function getStudentDashboardData(gradeString: string) {
     }
   });
 
-  const coreSubjects = subjects.filter(s => !s.isOptional).map(s => ({
+  const coreSubjects = subjects.filter((s: any) => !s.isOptional).map((s: any) => ({
     id: s.id,
     name: s.name,
     icon: s.icon || 'BookOpen',
@@ -22,7 +22,7 @@ export async function getStudentDashboardData(gradeString: string) {
     isOptional: false
   }));
 
-  const optionalSubjects = subjects.filter(s => s.isOptional).map(s => ({
+  const optionalSubjects = subjects.filter((s: any) => s.isOptional).map((s: any) => ({
     id: s.id,
     name: s.name,
     icon: s.icon || 'Palette',

@@ -3,8 +3,8 @@
 // GET /api/institutions/lookup?q=ABC1        → search by UIC code (exact or partial)
 // GET /api/institutions/lookup?name=Bosin    → search by school name (partial)
 
-import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { NextRequest, NextResponse } from "next/server";
 
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
