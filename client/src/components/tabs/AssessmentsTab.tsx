@@ -9,7 +9,7 @@ import {
   ChevronRight, Play, Lock, BarChart3
 } from "lucide-react";
 import type { TermBlock, Assessment, Question, CompetencyLevel, CBCTerm } from "@/types/subject";
-import { TERM_LABELS, COMPETENCY_META, ASSESSMENT_TYPE_META } from "@/types/subject";
+import { TERM_LABELS, COMPETENCY_META } from "@/types/subject";
 
 const TYPE_META: Record<string, { label: string; color: string; bg: string; icon: any }> = {
   FORMATIVE_QUIZ: { label: "Formative Quiz",  color: "#0ea5e9", bg: "rgba(14,165,233,0.1)",  icon: ClipboardList },
