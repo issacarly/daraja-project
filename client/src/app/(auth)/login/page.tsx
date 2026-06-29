@@ -166,7 +166,7 @@ export default function Login() {
                 <input type="checkbox" className="w-4 h-4 rounded border-slate-300 text-sky-600 focus:ring-sky-500" />
                 <span className="text-[14px] font-semibold text-slate-600">Remember me</span>
               </label>
-              <Link href="#" className="text-[14px] font-bold text-sky-600 hover:text-sky-700 transition-colors">
+              <Link href="/forgot-password" className="text-[14px] font-bold text-sky-600 hover:text-sky-700 transition-colors">
                 Forgot password?
               </Link>
             </div>
@@ -211,7 +211,7 @@ export default function Login() {
         {/* Glass Card Showcase */}
         <div className="glass w-[80%] max-w-[600px] rounded-[3rem] p-12 relative z-10 border-2 border-white/80 shadow-2xl shadow-sky-900/10 animate-float-delayed flex flex-col items-center text-center">
           
-          <Image src="/landing-photo.jpg" alt="Student" width={240} height={240} className="object-contain mb-6 -mt-12" />
+          <Image src="/landing-photo.png" alt="Student" width={240} height={240} className="object-contain mb-6 -mt-12" />
 
           <h2 className="text-[2.2rem] font-black text-slate-800 leading-[1.1] tracking-tight">
             The bridge to your <span className="text-gradient">academic success.</span>
@@ -222,7 +222,7 @@ export default function Login() {
           </p>
 
           <div className="mt-10 flex -space-x-4">
-            <div className="w-12 h-12 rounded-full border-4 border-white bg-slate-200 overflow-hidden"><Image src="/landing-photo.jpg" alt="Student" width={48} height={48} className="object-cover" /></div>
+            <div className="w-12 h-12 rounded-full border-4 border-white bg-slate-200 overflow-hidden"><Image src="/landing-photo.png" alt="Student" width={48} height={48} className="object-cover" /></div>
             <div className="w-12 h-12 rounded-full border-4 border-white bg-sky-200 flex items-center justify-center text-sky-700 font-bold text-sm">+2k</div>
           </div>
           <p className="mt-3 text-[13px] font-bold text-slate-400 uppercase tracking-widest">Active Learners</p>

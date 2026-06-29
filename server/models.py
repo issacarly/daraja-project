@@ -13,3 +13,7 @@ class User(Base):
     role = Column(String, default="STUDENT")
     grade = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
+    securityQuestion = Column(String(191), nullable=True)
+    securityAnswer = Column(String(191), nullable=True)
+    institutionId = Column(Integer, nullable=True)
+    uic = Column(String(191), nullable=True)

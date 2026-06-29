@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowLeft, Home, Mail, Lock, User, Sparkles, UserCircle2, Eye, EyeOff } from "lucide-react";
+import { ArrowLeft, Home, Mail, Lock, User, Sparkles, UserCircle2, Eye, EyeOff, ShieldQuestion, KeyRound } from "lucide-react";
 import { useState } from "react";
 import UICInput from "@/components/auth/UICInput";
 import { useRouter } from "next/navigation";
@@ -16,7 +16,10 @@ export default function Register() {
     password_confirm: "",
     role: "STUDENT",
     grade: "Grade 5",
-    institutionId: null as number | null
+    institutionId: null as number | null,
+    uic: "",
+    securityQuestion: "What city were you born in?",
+    securityAnswer: ""
   });
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
@@ -83,7 +86,7 @@ export default function Register() {
         {/* Glass Card Showcase */}
         <div className="glass w-[80%] max-w-[600px] rounded-[3rem] p-12 relative z-10 border-2 border-white/80 shadow-2xl shadow-amber-900/10 animate-float flex flex-col items-center text-center">
           
-          <Image src="/landing-photo.jpg" alt="Student" width={240} height={240} className="object-contain mb-6 -mt-12" />
+          <Image src="/landing-photo.png" alt="Student" width={240} height={240} className="object-contain mb-6 -mt-12" />
 
           <h2 className="text-[2.2rem] font-black text-slate-800 leading-[1.1] tracking-tight">
             Start your learning <span className="text-gradient">journey today.</span>
@@ -190,7 +193,7 @@ export default function Register() {
 
             <div className="space-y-2 z-50">
               <label className="text-[14px] font-bold text-slate-700 ml-1">School / Institution</label>
-              <UICInput onSelect={(inst) => setFormData(f => ({ ...f, institutionId: inst?.id ?? null }))} />
+              <UICInput onSelect={(inst) => setFormData(f => ({ ...f, institutionId: inst?.id ?? null, uic: inst?.uic ?? "" }))} />
             </div>
 
             <div className="space-y-2">
@@ -278,6 +281,51 @@ export default function Register() {
                   {showConfirmPassword ? <EyeOff size={18} strokeWidth={2.5} /> : <Eye size={18} strokeWidth={2.5} />}
                 </button>
               </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[14px] font-bold text-slate-700 ml-1">Security Question</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                  <ShieldQuestion size={18} strokeWidth={2.5} />
+                </div>
+                <select 
+                  name="securityQuestion"
+                  value={formData.securityQuestion}
+                  onChange={handleChange as any}
+                  className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-2xl text-[15px] font-medium text-slate-800 focus:outline-none focus:border-sky-500 focus:bg-white transition-colors appearance-none"
+                  required
+                >
+                  <option value="What city were you born in?">What city were you born in?</option>
+                  <option value="What is your mother's maiden name?">What is your mother's maiden name?</option>
+                  <option value="What was the name of your first pet?">What was the name of your first pet?</option>
+                  <option value="What was your childhood nickname?">What was your childhood nickname?</option>
+                </select>
+                <div className="absolute inset-y-0 right-4 flex items-center pointer-events-none text-slate-400">
+                  <svg width="12" height="8" viewBox="0 0 12 8" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M1 1.5L6 6.5L11 1.5" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-[14px] font-bold text-slate-700 ml-1">Security Answer</label>
+              <div className="relative">
+                <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-slate-400">
+                  <KeyRound size={18} strokeWidth={2.5} />
+                </div>
+                <input 
+                  type="text" 
+                  name="securityAnswer"
+                  value={formData.securityAnswer}
+                  onChange={handleChange}
+                  placeholder="Your secret answer"
+                  className="w-full pl-11 pr-4 py-3.5 bg-slate-50 border-2 border-slate-200 rounded-2xl text-[15px] font-medium text-slate-800 focus:outline-none focus:border-sky-500 focus:bg-white transition-colors placeholder:text-slate-400"
+                  required
+                />
+              </div>
+              <p className="text-xs text-slate-500 ml-1">You will need this to reset your password.</p>
             </div>
 
             {error && (

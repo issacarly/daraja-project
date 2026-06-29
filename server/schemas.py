@@ -13,6 +13,10 @@ class UserCreate(BaseModel):
     password_confirm: str
     role: str = "STUDENT"
     grade: str = "Grade 5"
+    securityQuestion: str
+    securityAnswer: str
+    institutionId: int | None = None
+    uic: str | None = None
 
     @validator('password_confirm')
     def passwords_match(cls, v, values, **kwargs):

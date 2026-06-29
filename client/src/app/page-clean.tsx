@@ -79,7 +79,7 @@ export default function Home() {
 
             <div className="rounded-[32px] border border-white/10 bg-white/5 p-5 shadow-2xl shadow-slate-950/30 backdrop-blur-xl">
               <div className="overflow-hidden rounded-[28px] border border-white/10 bg-slate-900">
-                <Image src="/landing-photo.jpg" alt="Daraja landing photo" width={700} height={520} className="h-full w-full object-cover" />
+                <Image src="/landing-photo.png" alt="Daraja landing photo" width={700} height={520} className="h-full w-full object-cover" />
               </div>
               <div className="mt-6 space-y-4 rounded-3xl bg-slate-950/90 p-5 text-slate-300">
                 <p className="text-sm uppercase tracking-[0.3em] text-sky-300">Real Kenyan CBC support</p>

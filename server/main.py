@@ -62,14 +62,18 @@ def signup(user: schemas.UserCreate, db: Session = Depends(get_db)):
         email=user.email, 
         password=hashed_password, 
         role=user.role,
-        grade=user.grade
+        grade=user.grade,
+        securityQuestion=user.securityQuestion,
+        securityAnswer=user.securityAnswer.lower().strip() if user.securityAnswer else None,
+        institutionId=user.institutionId,
+        uic=user.uic
     )
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
     
     access_token = create_access_token(data={"sub": str(new_user.id), "role": new_user.role})
-    return {"token": access_token, "user": {"id": new_user.id, "name": new_user.name, "email": new_user.email, "role": new_user.role, "grade": new_user.grade}}
+    return {"token": access_token, "user": {"id": new_user.id, "name": new_user.name, "email": new_user.email, "role": new_user.role, "grade": new_user.grade, "institutionId": new_user.institutionId, "uic": new_user.uic}}
 
 @app.post("/api/login")
 def login(user_credentials: schemas.UserLogin, db: Session = Depends(get_db)):
@@ -87,6 +91,40 @@ def login(user_credentials: schemas.UserLogin, db: Session = Depends(get_db)):
     print("Login successful")
     
     access_token = create_access_token(data={"sub": str(user.id), "role": user.role})
-    return {"token": access_token, "user": {"id": user.id, "name": user.name, "email": user.email, "role": user.role, "grade": user.grade}}
+    return {"token": access_token, "user": {"id": user.id, "name": user.name, "email": user.email, "role": user.role, "grade": user.grade, "institutionId": user.institutionId, "uic": user.uic}}
 
-# Trigger reload
+from pydantic import BaseModel
+
+class SecurityQuestionRequest(BaseModel):
+    email: str
+
+class ResetPasswordRequest(BaseModel):
+    email: str
+    securityAnswer: str
+    newPassword: str
+
+@app.post("/api/auth/security-question")
+def get_security_question(req: SecurityQuestionRequest, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.email == req.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="No account found with this email.")
+    if not user.securityQuestion:
+        raise HTTPException(status_code=400, detail="This account does not have a security question set up.")
+    return {"securityQuestion": user.securityQuestion}
+
+@app.post("/api/auth/reset-password")
+def reset_password(req: ResetPasswordRequest, db: Session = Depends(get_db)):
+    user = db.query(models.User).filter(models.User.email == req.email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="No account found with this email.")
+    if not user.securityAnswer:
+        raise HTTPException(status_code=400, detail="This account does not have a security question set up.")
+    
+    # Check answer (case-insensitive)
+    if req.securityAnswer.lower().strip() != user.securityAnswer.lower().strip():
+        raise HTTPException(status_code=400, detail="Incorrect security answer.")
+    
+    # Hash new password and save
+    user.password = get_password_hash(req.newPassword)
+    db.commit()
+    return {"success": True, "message": "Password has been successfully reset."}
