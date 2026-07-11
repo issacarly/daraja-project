@@ -380,10 +380,10 @@ function resolveTermsForSubject(name: string): Record<CBCTerm, TermBlock> {
 export type SubjectMeta = {
   id: string;
   name: string;
-  icon?: string | null;
-  color?: string | null;
+  icon: string;
+  color: string;
   grade: string;
-  description?: string | null;
+  description?: string;
 };
 
 /**
@@ -402,8 +402,8 @@ export function buildSubjectContent(meta: SubjectMeta): Subject {
     id: meta.id,
     name: meta.name,
     grade: meta.grade as Subject["grade"],
-    icon: meta.icon || "BookOpen",
-    color: meta.color || "#0ea5e9",
+    icon: meta.icon,
+    color: meta.color,
     description:
       meta.description ??
       (hasContent

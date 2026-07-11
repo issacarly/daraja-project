@@ -2,7 +2,8 @@
 // app/(student)/subjects/[id]/page.tsx
 // The full Daraja subject page — replaces the original thin version.
 // Drop-in: same file path and props contract as before.
-// All tab state is local; data is fetched via your existing server action.
+// All tab state is local; subject metadata is fetched via your existing
+// getAllSubjects server action, and merged with per-subject mock content.
 
 import React, { useState, useEffect, use } from "react";
 import { useRouter } from "next/navigation";
@@ -228,8 +229,8 @@ export default function SubjectPage({ params }: { params: Promise<{ id: string }
               <ArrowLeft size={20} />
             </button>
             <div className="h-5 w-px bg-slate-200 hidden sm:block" />
-            <Link href="/" className="hidden sm:flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-sky-600 transition-colors">
-              <Home size={16} strokeWidth={2.5} /> Home
+            <Link href="/dashboard" className="hidden sm:flex items-center gap-2 text-sm font-bold text-slate-400 hover:text-sky-600 transition-colors">
+              <Home size={16} strokeWidth={2.5} /> Dashboard
             </Link>
           </div>
           <span className="font-bold text-slate-800 text-base sm:hidden truncate px-4">{subject.name}</span>
