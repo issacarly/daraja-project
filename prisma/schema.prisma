@@ -13,14 +13,16 @@ datasource db {
 // =====================
 
 model Institution {
-  id        Int      @id @default(autoincrement())
-  uic       String   @unique @db.VarChar(4)
-  name      String   @db.VarChar(255)
-  classes   Int      @default(1)
-  createdAt DateTime @default(now())
+  id                Int                @id @default(autoincrement())
+  uic               String             @unique @db.VarChar(4)
+  name              String             @db.VarChar(255)
+  classes           Int                @default(1)
+  createdAt         DateTime           @default(now())
 
   // Relations
-  users User[]
+  users             User[]
+  curriculums       Curriculum[]
+  competencyProfile CompetencyProfile?
 
   @@map("institutions")
 }
@@ -288,4 +290,45 @@ model HelpRequest {
   adminNotes  String?           @db.Text
   createdAt   DateTime          @default(now())
   updatedAt   DateTime          @updatedAt
+}
+
+enum AdminRole {
+  SUPER_ADMIN
+  CONTENT_ADMIN
+  SUPPORT_ADMIN
+}
+
+model Admin {
+  id        String    @id @default(cuid())
+  name      String
+  email     String    @unique
+  password  String
+  role      AdminRole @default(CONTENT_ADMIN)
+  createdAt DateTime  @default(now())
+}
+
+model Curriculum {
+  id            String   @id @default(cuid())
+  institutionId Int?
+  institution   Institution? @relation(fields: [institutionId], references: [id])
+  gradeLevel    String
+  subjectName   String
+  term          String
+  isDefault     Boolean  @default(false)  // true = fallback for schools without a custom curriculum
+  content       Json     // topics, lesson outlines, structured per your buildSubjectContent shape
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  @@index([institutionId, gradeLevel, subjectName, term])
+}
+
+model CompetencyProfile {
+  id            String   @id @default(cuid())
+  institutionId Int   @unique
+  institution   Institution @relation(fields: [institutionId], references: [id])
+  belowLabel    String   @default("Below Expectation")
+  approachingLabel String @default("Approaching Expectation")
+  meetingLabel  String   @default("Meeting Expectation")
+  exceedingLabel String  @default("Exceeding Expectation")
+  assessmentWeights Json @default("{}")  // e.g. { "quiz": 0.3, "cat": 0.3, "assignment": 0.4 }
 }
