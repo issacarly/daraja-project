@@ -250,3 +250,42 @@ model QuizAttempt {
   totalMarks  Int?
   attemptedAt DateTime @default(now())
 }
+
+enum HelpCategory {
+  TECHNICAL_ISSUE
+  LOGIN_ACCOUNT
+  CURRICULUM_CONTENT
+  ASSESSMENT_GRADING
+  PAYMENT_BILLING
+  BUG_REPORT
+  OTHER
+}
+
+enum HelpRequestStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum RequesterRole {
+  STUDENT
+  GUARDIAN
+  TEACHER
+}
+
+model HelpRequest {
+  id          String            @id @default(cuid())
+  category    HelpCategory
+  subject     String
+  message     String            @db.Text
+  status      HelpRequestStatus @default(OPEN)
+  role        RequesterRole
+  name        String
+  email       String
+  schoolName  String?
+  gradeLevel  String?
+  adminNotes  String?           @db.Text
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+}
