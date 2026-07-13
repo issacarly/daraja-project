@@ -19,6 +19,7 @@ import LessonsTab     from "@/components/tabs/LessonsTab";
 import AssessmentsTab from "@/components/tabs/AssessmentsTab";
 import PastPapersTab  from "@/components/tabs/PastPapersTab";
 import LiveClassesTab from "@/components/tabs/LiveClassesTab";
+import CurriculumAIWidget from "@/components/CurriculumAIWidget";
 
 // ── Types & mock data ──
 import type { Subject, SubjectTab, CBCTerm } from "@/types/subject";
@@ -146,6 +147,18 @@ export default function SubjectPage({ params }: { params: Promise<{ id: string }
   const [subject,     setSubject]     = useState<Subject | null>(null);
   const [activeTab,   setActiveTab]   = useState<SubjectTab>("overview");
   const [activeTerm,  setActiveTerm]  = useState<CBCTerm>("TERM_1");
+  const [user,        setUser]        = useState<any>(null);
+
+  useEffect(() => {
+    const userStr = localStorage.getItem("user");
+    if (userStr) {
+      try {
+        setUser(JSON.parse(userStr));
+      } catch (e) {
+        console.error("Error reading user data:", e);
+      }
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -270,6 +283,12 @@ export default function SubjectPage({ params }: { params: Promise<{ id: string }
           <LiveClassesTab terms={subject.terms} color={color} />
         )}
       </div>
+
+      <CurriculumAIWidget
+        gradeLevel={subject.grade}
+        subjectName={subject.name}
+        institutionId={user?.institutionId || user?.uic}
+      />
     </div>
   );
 }
