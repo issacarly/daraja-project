@@ -4,7 +4,6 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { ArrowLeft, Home, HelpCircle, Send, MessageSquare, ShieldAlert, CheckCircle2, ChevronDown, BookOpen } from "lucide-react";
-import { submitHelpRequest } from "@/app/actions/help";
 
 export const HELP_CATEGORIES = [
   { value: "TECHNICAL_ISSUE", label: "Technical issue (app not working)" },
@@ -82,18 +81,24 @@ export default function HelpPage() {
     setIsSubmitting(true);
 
     try {
-      const res = await submitHelpRequest({
-        category: formData.category,
-        subject: formData.subject,
-        message: formData.message,
-        role: (user?.role?.toUpperCase() || "STUDENT") as any,
-        name: user?.name || "Anonymous Student",
-        email: user?.email || "anonymous@daraja.app",
-        schoolName: user?.schoolName || user?.uic || undefined,
-        gradeLevel: user?.grade || undefined
+      const response = await fetch("/api/help", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          category: formData.category,
+          subject: formData.subject,
+          message: formData.message,
+          role: user?.role?.toUpperCase() || "STUDENT",
+          name: user?.name || "Anonymous Student",
+          email: user?.email || "anonymous@daraja.app",
+          schoolName: user?.schoolName || user?.uic || null,
+          gradeLevel: user?.grade || null
+        })
       });
 
-      if (res.success) {
+      const res = await response.json();
+
+      if (response.ok && res.success) {
         setSubmitSuccess(true);
         setFormData({
           category: "TECHNICAL_ISSUE",
