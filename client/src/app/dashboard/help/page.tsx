@@ -6,6 +6,18 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, Home, HelpCircle, Send, MessageSquare, ShieldAlert, CheckCircle2, ChevronDown, BookOpen } from "lucide-react";
 import { submitHelpRequest } from "@/app/actions/help";
 
+export const HELP_CATEGORIES = [
+  { value: "TECHNICAL_ISSUE", label: "Technical issue (app not working)" },
+  { value: "LOGIN_ACCOUNT", label: "Login or account problem" },
+  { value: "CURRICULUM_CONTENT", label: "Curriculum or lesson content" },
+  { value: "ASSESSMENT_GRADING", label: "Assessment or grading question" },
+  { value: "PAYMENT_BILLING", label: "Payment or billing" },
+  { value: "BUG_REPORT", label: "Something looks broken" },
+  { value: "OTHER", label: "Something else" },
+] as const;
+
+export type HelpCategoryValue = typeof HELP_CATEGORIES[number]["value"];
+
 type FAQItem = {
   q: string;
   a: string;
@@ -196,13 +208,11 @@ export default function HelpPage() {
                     onChange={handleInputChange}
                     className="w-full px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-none focus:border-sky-500 transition-colors"
                   >
-                    <option value="TECHNICAL_ISSUE">Technical Issue</option>
-                    <option value="LOGIN_ACCOUNT">Login &amp; Account</option>
-                    <option value="CURRICULUM_CONTENT">Curriculum Content</option>
-                    <option value="ASSESSMENT_GRADING">Assessment &amp; Grading</option>
-                    <option value="PAYMENT_BILLING">Payment &amp; Billing</option>
-                    <option value="BUG_REPORT">Bug Report</option>
-                    <option value="OTHER">Other</option>
+                    {HELP_CATEGORIES.map((cat) => (
+                      <option key={cat.value} value={cat.value}>
+                        {cat.label}
+                      </option>
+                    ))}
                   </select>
                 </div>
 
